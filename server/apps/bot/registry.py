@@ -22,20 +22,20 @@ class Registry:
             yield entry
 
     def get_descriptor(self, token: str):
-        if token not in self.cache:
-            self.cache[token] = next((x for x in self if x.bot.token == token), None)
+        # if token not in self.cache:
+        #     self.cache[token] = next((x for x in self if x.bot.token == token), None)
+        #
+        #     if self.cache[token] is None:
+        #         del self.cache[token]
+        #         return None
 
-            if self.cache[token] is None:
-                del self.cache[token]
-                return None
-
-        return self.cache[token]
+        return self.cache.get(token)
 
     def register(self, item: 'Dispatcher'):
         return self.add_entry(item)
 
     def add_entry(self, item: 'Dispatcher'):
-        self.storage.append(item)
+        self.cache[item.bot.token] = item
 
         return item
 
