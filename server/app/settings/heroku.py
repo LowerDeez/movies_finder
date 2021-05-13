@@ -1,14 +1,17 @@
 import dj_database_url
 
-from .default import MIDDLEWARE, INSTALLED_APPS, DATABASES
+from .default import env, MIDDLEWARE, INSTALLED_APPS, DATABASES
 
-INSTALLED_APPS += [
-    'whitenoise',
-]
+heroku_mode_enable = env.bool('HEROKU_MODE', default=False)
 
-ALLOWED_HOSTS = ['.herokuapp.com']
+if heroku_mode_enable:
+    INSTALLED_APPS += [
+        'whitenoise',
+    ]
 
-MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware',)
+    ALLOWED_HOSTS = ['.herokuapp.com']
 
-prod_db = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(prod_db)
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware',)
+
+    prod_db = dj_database_url.config(conn_max_age=500)
+    DATABASES['default'].update(prod_db)
