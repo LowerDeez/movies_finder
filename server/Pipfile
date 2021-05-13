@@ -1,0 +1,39 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[requires]
+python_version = '3.9'
+
+[dev-packages]
+django-debug-toolbar = "*"
+freezegun = "*"
+coverage = "*"
+"flake8" = "*"
+mypy = "*"
+bandit = "*"
+tox = "*"
+pydocstyle = "*"
+ipython = "*"
+
+[packages]
+pillow = "*"
+"psycopg2-binary" = "*"
+"jinja2" = "*"
+django = "*"
+unidecode = "*"
+celery = "*"
+django-jinja = "*"
+django-model-utils = "*"
+django-rosetta = "*"
+django-redis = "*"
+django-composable-views = {git = "https://gitlab.com/preusx/django-composable-views.git", ref = "0.1.0"}
+django-environ = "*"
+gunicorn = {version = "*", sys_platform = "== 'linux'"}
+gevent = {version = "*", sys_platform = "== 'linux'"}
+python-telegram-bot = "*"
+tmdbv3api = "*"
+django-constance = "*"
+django-picklefield = "*"
+django-rest-framework = "*"
