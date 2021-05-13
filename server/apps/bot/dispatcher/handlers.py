@@ -50,7 +50,7 @@ def start(update: 'Update', context: 'CallbackContext'):
         context=context
     )
     save_user(user_entity=user)
-    activate_user_language(user)
+    activate_user_language(user=user)
     context.user_data['language'] = user.language_code
     print('User:', user)
     text = str(_(
