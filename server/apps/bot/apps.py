@@ -14,5 +14,5 @@ class BotConfig(AppConfig):
         for bot in Bot.objects.all():
             dispatcher = get_dispatcher(token=bot.token)
             registry.add_entry(dispatcher)
-            
+
         print('INIT REGISTRY:', registry)
