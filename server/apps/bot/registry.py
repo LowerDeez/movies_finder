@@ -21,7 +21,7 @@ class Registry:
         for entry in self.storage:
             yield entry
 
-    def get_descriptor(self, token: str):
+    def get_dispatcher(self, token: str):
         if token not in self.cache:
             self.cache[token] = next((x for x in self if x.bot.token == token), None)
 

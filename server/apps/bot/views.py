@@ -17,7 +17,7 @@ class WebhookView(APIView):
         token: str = kwargs['token']
         print('TOKEN:', token)
         print('REGISTRY:', registry)
-        dispatcher = registry.get_descriptor(token)
+        dispatcher = registry.get_dispatcher(token)
         print('DISPATCHER:', dispatcher)
         dispatcher = process_webhook_event(
             token=kwargs['token'],
