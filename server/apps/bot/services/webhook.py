@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 __all__ = (
     'set_webhook',
+    'get_dispatcher',
     'process_webhook_event'
 )
 
