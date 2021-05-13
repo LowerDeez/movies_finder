@@ -129,12 +129,12 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 
 # Database
-
-# DATABASES = {
-#     # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
-#     'default': env.db('DJANGO_DB_URL', default=None)
-# }
-# DATABASES['default']['CONN_MAX_AGE'] = env.int('CONN_MAX_AGE', default=0)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # Password validation
 
@@ -187,6 +187,8 @@ SITE_ID = 1
 CACHES = {
     'default': env.cache_url('DJANGO_CACHE_URL', 'dummycache://127.0.0.1')
 }
+
+# CELERY_BROKER_URL = env.str('CELERY_BROKER_URL')
 
 # If you are using HTTPS enable this
 # SESSION_COOKIE_SECURE = True
