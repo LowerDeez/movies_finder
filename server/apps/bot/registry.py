@@ -14,6 +14,9 @@ class Registry:
         self.storage: List['Dispatcher'] = []
         self.cache: Dict[str, 'Dispatcher'] = {}
 
+    def __str__(self):
+        return self.cache
+
     def __iter__(self):
         for entry in self.storage:
             yield entry
