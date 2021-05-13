@@ -174,22 +174,12 @@ def display_movies_callback(update: 'Update', context: 'CallbackContext'):
     message = update.message
 
     if update.message:
-        search_keyword = (
-            user_data.setdefault(
-                CONSTS.search_keyword,
-                update.message.text
-            )
-        )
+        search_keyword = update.message.text
+        user_data[CONSTS.search_keyword] = search_keyword
 
     # if we have callback query with `next_movies`
     if update.callback_query:
         message = update.callback_query.message
-        search_keyword = (
-            user_data.setdefault(
-                CONSTS.search_keyword,
-                message.text
-            )
-        )
         page += 1
 
     print('Search keywords:', search_keyword)
