@@ -101,8 +101,8 @@ def start(update: 'Update', context: 'CallbackContext'):
     print('Start message:', update.message)
     if not update.message:
         update.callback_query.answer()
-        update.callback_query.edit_message_text(
-            text=text,
+        update.callback_query.edit_message_reply_markup(
+            # text=text,
             reply_markup=keyboard
         )
     else:
@@ -161,8 +161,21 @@ def end_third_level_conversation(update: 'Update', context: 'CallbackContext'):
 def search_movies_callback(update: 'Update', context: 'CallbackContext'):
     print('Search movies...')
     text = str(_('Okay, please enter some keywords to search:'))
+    print(update.callback_query.data)
+    search_keyword = context.user_data.pop(CONSTS.search_keyword, None)
+    print('Previous search keyword:', search_keyword)
     update.callback_query.answer()
-    update.callback_query.edit_message_text(text=text)
+
+    if search_keyword:
+        update.callback_query.message.reply_text(
+            text=text
+        )
+        update.callback_query.edit_message_reply_markup(
+            reply_markup=None
+        )
+    else:
+        update.callback_query.edit_message_text(text=text)
+
     return STATE_CHOICES.searching_movies
 
 
@@ -174,6 +187,7 @@ def display_movies_callback(update: 'Update', context: 'CallbackContext'):
     message = update.message
 
     if update.message:
+        page = 1
         search_keyword = update.message.text
         user_data[CONSTS.search_keyword] = search_keyword
 
@@ -290,7 +304,7 @@ def discovering_movies_callback(update: 'Update', context: 'CallbackContext') ->
 
 def select_genre_callback(update: 'Update', context: 'CallbackContext'):
     print('Select genre:')
-    text = str(_('Okay, that is genres:'))
+    text = str(_('Okay, these are genres:'))
     buttons = []
 
     genres = (
@@ -322,7 +336,7 @@ def select_genre_callback(update: 'Update', context: 'CallbackContext'):
 
 def select_years_callback(update: 'Update', context: 'CallbackContext'):
     print('Select years:')
-    text = str(_('Okay, that is years:'))
+    text = str(_('Okay, these are years:'))
     buttons = []
 
     for year, title in YEARS_CHOICES:

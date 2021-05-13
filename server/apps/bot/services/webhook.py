@@ -26,7 +26,7 @@ def set_webhook(
 ) -> bool:
     updater = Updater(token=bot.token)
 
-    if force_https:
+    if request.scheme != 'https' and force_https:
         request._get_scheme = lambda: 'https'
 
     url = (
@@ -37,7 +37,9 @@ def set_webhook(
             )
         )
     )
+    print('Webhook url:', url)
     result = updater.bot.setWebhook(url)
+    print('Webhook result:', result)
     return result
 
 
