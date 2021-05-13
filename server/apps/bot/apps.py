@@ -6,6 +6,7 @@ class BotConfig(AppConfig):
     name = 'apps.bot'
 
     def ready(self):
+        print('INIT BOTS:')
         from .models import Bot
         from .registry import registry
         from .services import get_dispatcher
