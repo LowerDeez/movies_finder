@@ -39,6 +39,7 @@ from .services import (
     get_discovering_movies_callback_text,
     get_current_page
 )
+from .utils import activate_user_language
 from ..services.user import parse_user, save_user
 
 
@@ -49,6 +50,7 @@ def start(update: 'Update', context: 'CallbackContext'):
         context=context
     )
     save_user(user_entity=user)
+    activate_user_language(user)
     context.user_data['language'] = user.language_code
     print('User:', user)
     text = str(_(

@@ -8,6 +8,4 @@ def restart_server(sender, **kwargs):
     """
     Restart server after rosetta translations fix.
     """
-    import os
-
-    os.system(f"kill -HUP `cat {settings.GUNICORN_PID}`")
+    # TODO: restart

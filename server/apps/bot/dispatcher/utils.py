@@ -1,5 +1,14 @@
+from typing import TYPE_CHECKING
+
+from django.conf import settings
+from django.utils.translation import activate
+
+if TYPE_CHECKING:
+    from ..entities import User
+
 __all__ = (
     'lookahead',
+    'activate_user_language'
 )
 
 
@@ -20,3 +29,11 @@ def lookahead(iterable):
 
     # Report the last value.
     yield last, True
+
+
+def activate_user_language(*, user: 'User'):
+    language_codes = list(dict(settings.LANGUAGES).keys())
+    print(language_codes)
+    if user.language_code:
+        if user.language_code in language_codes:
+            activate(user.language_code)
