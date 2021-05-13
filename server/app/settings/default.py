@@ -132,7 +132,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     # Raises ImproperlyConfigured exception if DATABASE_URL not in os.environ
-    'default': env.db('DJANGO_DB_URL')
+    'default': env.db('DJANGO_DB_URL', default=None)
 }
 DATABASES['default']['CONN_MAX_AGE'] = env.int('CONN_MAX_AGE', default=0)
 
