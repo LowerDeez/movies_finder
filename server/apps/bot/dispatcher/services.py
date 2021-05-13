@@ -56,10 +56,10 @@ def render_movies(
 
             image = (
                 f'https://www.themoviedb.org/t/p/'
-                f'w600_and_h900_bestv2/'
+                f'w600_and_h900_bestv2'
                 f'{movie.backdrop_path}'
             )
-
+            print('Image:', image)
             message.bot.send_photo(
                 message.chat.id,
                 photo=image,

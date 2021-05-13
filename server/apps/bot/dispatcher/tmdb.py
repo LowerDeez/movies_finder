@@ -71,7 +71,7 @@ class TMDBWrapper:
     def search_movies(self, query: str, page: int = 1, **kwargs):
         return self.movie.search(term=query, page=page)
 
-    # @modify_result
+    @modify_result(return_movies)
     def discover_movies(self, params: Dict, **kwargs):
         return self.discover.discover_movies(params=params)
 

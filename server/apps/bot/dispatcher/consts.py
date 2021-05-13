@@ -26,7 +26,8 @@ ACTION_CHOICES = Choices(
     ('select_years', 'Select years'),
     ('discover', 'Discover'),
     ('show_search_params', 'Show params'),
-    ('next_movies', 'Next movies')
+    ('next_movies', 'Next movies'),
+    ('clear_search_params', 'Clear search params')
 )
 STATE_CHOICES = Choices(
     ('selecting_action', 'Selection action'),

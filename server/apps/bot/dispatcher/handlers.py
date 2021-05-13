@@ -101,8 +101,12 @@ def start(update: 'Update', context: 'CallbackContext'):
     print('Start message:', update.message)
     if not update.message:
         update.callback_query.answer()
+        # remove back button
         update.callback_query.edit_message_reply_markup(
-            # text=text,
+            reply_markup=None
+        )
+        update.callback_query.message.reply_text(
+            text=text,
             reply_markup=keyboard
         )
     else:
@@ -155,6 +159,9 @@ def end_third_level_conversation(update: 'Update', context: 'CallbackContext'):
     Returns to discovering movies menu from nested options like "Show data"
     """
     print('End third level conversation...')
+    print(update.callback_query.data)
+    if update.callback_query.data == ACTION_CHOICES.clear_search_params:
+        context.user_data.clear()
     return discovering_movies_callback(update, context)
 
 
@@ -254,7 +261,7 @@ def list_movies_callback(update: 'Update', context: 'CallbackContext'):
 # Second level conversation callbacks
 def discovering_movies_callback(update: 'Update', context: 'CallbackContext') -> str:
     """Choose to add a parent or a child."""
-    print('Discover movies:')
+    print('Discovering movies:')
     set_search_params(
         update=update,
         context=context,
@@ -294,10 +301,18 @@ def discovering_movies_callback(update: 'Update', context: 'CallbackContext') ->
     keyboard = InlineKeyboardMarkup(buttons)
 
     update.callback_query.answer()
-    update.callback_query.edit_message_text(
-        text=text,
-        reply_markup=keyboard
-    )
+    print('Callback:', update.callback_query.data)
+    if update.callback_query.data == str(END):
+        update.callback_query.message.reply_text(
+            text=text,
+            reply_markup=keyboard
+        )
+        update.callback_query.edit_message_reply_markup()
+    else:
+        update.callback_query.edit_message_text(
+            text=text,
+            reply_markup=keyboard
+        )
 
     return STATE_CHOICES.discovering_movies
 
@@ -365,6 +380,12 @@ def show_data(update: 'Update', context: 'CallbackContext') -> str:
                 InlineKeyboardButton(
                     text=str(_('Discover')),
                     callback_data=ACTION_CHOICES.discover
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text=str(_('Clear')),
+                    callback_data=ACTION_CHOICES.clear_search_params
                 )
             ],
             BACK_BUTTON
@@ -456,7 +477,7 @@ def get_select_action_handlers():
                     ),
                     CallbackQueryHandler(
                         end_third_level_conversation,
-                        pattern=f'^{END}$'
+                        pattern=f'^{END}$|^{ACTION_CHOICES.clear_search_params}$'
                     ),
                 ]
             },
