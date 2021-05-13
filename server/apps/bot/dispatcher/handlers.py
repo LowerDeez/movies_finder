@@ -100,8 +100,11 @@ def start(update: 'Update', context: 'CallbackContext'):
     # case for back from `discovering_movies_callback`
     print('Start message:', update.message)
     if not update.message:
+        print('Callback:', update.callback_query.data)
+        print('User data:', context.user_data)
         update.callback_query.answer()
         # remove back button
+        # update.callback_query.message.delete()
         update.callback_query.edit_message_reply_markup(
             reply_markup=None
         )
@@ -109,6 +112,8 @@ def start(update: 'Update', context: 'CallbackContext'):
             text=text,
             reply_markup=keyboard
         )
+        if context.user_data.pop(CONSTS.search_params, None) is not None:
+            update.callback_query.delete_message()
     else:
         update.message.reply_text(
             text=text,
