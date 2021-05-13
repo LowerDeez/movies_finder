@@ -188,8 +188,6 @@ CACHES = {
     'default': env.cache_url('DJANGO_CACHE_URL', 'dummycache://127.0.0.1')
 }
 
-CELERY_BROKER_URL = env.str('CELERY_BROKER_URL')
-
 # If you are using HTTPS enable this
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
