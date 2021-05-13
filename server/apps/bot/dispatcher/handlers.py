@@ -184,6 +184,12 @@ def display_movies_callback(update: 'Update', context: 'CallbackContext'):
     # if we have callback query with `next_movies`
     if update.callback_query:
         message = update.callback_query.message
+        search_keyword = (
+            user_data.setdefault(
+                CONSTS.search_keyword,
+                message.text
+            )
+        )
         page += 1
 
     print('Search keywords:', search_keyword)
