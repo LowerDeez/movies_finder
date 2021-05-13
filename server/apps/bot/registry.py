@@ -15,7 +15,7 @@ class Registry:
         self.cache: Dict[str, 'Dispatcher'] = {}
 
     def __str__(self):
-        return self.cache
+        return str(self.cache)
 
     def __iter__(self):
         for entry in self.storage:
