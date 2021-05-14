@@ -1,12 +1,14 @@
+{% load i18n %}
+
 {% if image %}<a href="{{image}}">&#8205;</a>{% endif %}
 <a href="{{link}}">{{title}}</a>
 
-<b>Rating:</b> {{rating}}/10
+<b>{% translate "Rating:" %}</b> {{rating}}/10
 
-<b>Vote count:</b> {{vote_count}}
+<b>{% translate "Vote count:" %}</b> {{vote_count}}
 
-<b>Release date:</b> {{release_date}}
+<b>{% translate Release date: %}</b> {{release_date}}
 
-<b>Genres:</b> {{genres}}
+<b>{% translate Genres: %}</b> {{genres}}
 
-<b>Description:</b> {{description}}
+<b>{% translate Description: %}</b> {{description}}

@@ -1,0 +1,156 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-05-14 10:07+0000\n"
+"PO-Revision-Date: 2021-05-14 10:48+0000\n"
+"Last-Translator: b'  <>'\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+"X-Translated-Using: django-rosetta 0.9.6\n"
+
+#: app/settings/contrib/constance.py:19
+msgid "Movie DB API key"
+msgstr ""
+
+#: apps/bot/dispatcher/consts.py:68
+msgid "Back"
+msgstr "Назад"
+
+#: apps/bot/dispatcher/handlers.py:52
+msgid "Lets find a movie for you..."
+msgstr "Давайте найдем Вам кино..."
+
+#: apps/bot/dispatcher/handlers.py:58
+msgid "Discover movies"
+msgstr "По параметрам"
+
+#: apps/bot/dispatcher/handlers.py:62
+msgid "Search movies"
+msgstr "По ключевому слову"
+
+#: apps/bot/dispatcher/handlers.py:68
+msgid "Popular"
+msgstr "Популярное"
+
+#: apps/bot/dispatcher/handlers.py:72
+msgid "Top Rated"
+msgstr "Топ-рейтинг"
+
+#: apps/bot/dispatcher/handlers.py:78
+msgid "Upcoming"
+msgstr "Предстоящие"
+
+#: apps/bot/dispatcher/handlers.py:82
+msgid "Now playing"
+msgstr "Сейчас в кино"
+
+#: apps/bot/dispatcher/handlers.py:88
+msgid "Done"
+msgstr "Готово"
+
+#: apps/bot/dispatcher/handlers.py:125
+msgid "See you around!"
+msgstr "Увидимся!"
+
+#: apps/bot/dispatcher/handlers.py:135 apps/bot/dispatcher/handlers.py:143
+msgid "Okay, bye."
+msgstr "Досвидания!"
+
+#: apps/bot/dispatcher/handlers.py:170
+msgid "Okay, please enter some keywords to search:"
+msgstr "Введите какие-то ключевые слова для поиска"
+
+#: apps/bot/dispatcher/handlers.py:277
+msgid "Genres"
+msgstr "Жанры"
+
+#: apps/bot/dispatcher/handlers.py:283
+msgid "Years range"
+msgstr "Года"
+
+#: apps/bot/dispatcher/handlers.py:289
+msgid "Show data"
+msgstr "Показать параметры"
+
+#: apps/bot/dispatcher/handlers.py:295 apps/bot/dispatcher/handlers.py:381
+msgid "Discover"
+msgstr "Найти"
+
+#: apps/bot/dispatcher/handlers.py:322
+msgid "Okay, these are genres:"
+msgstr "Это жанры:"
+
+#: apps/bot/dispatcher/handlers.py:354
+msgid "Okay, these are years:"
+msgstr "Это года:"
+
+#: apps/bot/dispatcher/handlers.py:387
+msgid "Clear"
+msgstr "Очистить"
+
+#: apps/bot/dispatcher/services.py:139
+msgid "Next movies"
+msgstr "Еще фильмы"
+
+#: apps/bot/models.py:21
+msgid "Bot"
+msgstr ""
+
+#: apps/bot/models.py:22
+msgid "Bots"
+msgstr ""
+
+#: apps/bot/models.py:30
+msgid "User id"
+msgstr ""
+
+#: apps/bot/models.py:34
+msgid "Username"
+msgstr ""
+
+#: apps/bot/models.py:39
+msgid "First name"
+msgstr ""
+
+#: apps/bot/models.py:44
+msgid "Last name"
+msgstr ""
+
+#: apps/bot/models.py:49
+msgid "Language code"
+msgstr ""
+
+#: apps/bot/models.py:54
+msgid "Is blocked bot"
+msgstr ""
+
+#: apps/bot/models.py:59
+msgid "Chat user"
+msgstr ""
+
+#: apps/bot/models.py:60
+msgid "Chat users"
+msgstr ""
+
+#: apps/bot/templates/movies/card.html:6
+msgid "Rating:"
+msgstr "Рейтинг:"
+
+#: apps/bot/templates/movies/card.html:8
+msgid "Vote count:"
+msgstr "Кол-во голосов:"
+
+#: shared/apps.py:9
+msgid "Shared"
+msgstr ""

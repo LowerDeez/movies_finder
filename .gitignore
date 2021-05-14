@@ -51,7 +51,7 @@ htmlcov
 .mypy_cache
 
 server/app/uploads/
-server/app/locale/
+#server/app/locale/
 server/uploads/
 server/static/
 server/apps/temporary/
