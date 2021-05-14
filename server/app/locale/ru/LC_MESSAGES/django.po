@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-14 10:07+0000\n"
-"PO-Revision-Date: 2021-05-14 10:48+0000\n"
+"POT-Creation-Date: 2021-05-14 11:01+0000\n"
+"PO-Revision-Date: 2021-05-14 11:02+0000\n"
 "Last-Translator: b'  <>'\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -150,6 +150,19 @@ msgstr "Рейтинг:"
 #: apps/bot/templates/movies/card.html:8
 msgid "Vote count:"
 msgstr "Кол-во голосов:"
+
+#: apps/bot/templates/movies/card.html:10
+msgid "Release date:"
+msgstr "Дата релиза:"
+
+#: apps/bot/templates/movies/card.html:12
+#| msgid "Genres"
+msgid "Genres:"
+msgstr "Жанры:"
+
+#: apps/bot/templates/movies/card.html:14
+msgid "Description:"
+msgstr "Описание:"
 
 #: shared/apps.py:9
 msgid "Shared"
