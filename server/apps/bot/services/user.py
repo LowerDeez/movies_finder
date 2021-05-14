@@ -42,7 +42,7 @@ def parse_user(*, update: 'Update', context: 'CallbackContext') -> 'UserEntity':
 
     return UserEntity(
         **{
-            field: user[field] for field in user_fields
+            field: user[field] for field in user_fields if user.get(field)
         },
     )
 
