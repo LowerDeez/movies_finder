@@ -32,7 +32,7 @@ def search_movies(update: 'Update', context: 'CallbackContext') -> None:
 
     movies = []
 
-    for page in range(1, 5):
+    for page in range(1, 6):
         movies.extend(
             wrapper
             .search_movies(
@@ -41,30 +41,25 @@ def search_movies(update: 'Update', context: 'CallbackContext') -> None:
             )
         )
 
-    print(movies)
-    results = []
-
-    for movie in movies:
-        results.append(
-            InlineQueryResultArticle(
-                id=str(movie.id),
-                title=movie.title,
-                input_message_content=InputTextMessageContent(
-                    render_movie_html(
-                        movie=movie,
-                        context=context,
-                        with_image=True
-                    ),
-                    disable_web_page_preview=False,
-                    parse_mode=ParseMode.HTML
+    update.inline_query.answer([
+        InlineQueryResultArticle(
+            id=str(movie.id),
+            title=movie.title,
+            input_message_content=InputTextMessageContent(
+                render_movie_html(
+                    movie=movie,
+                    context=context,
+                    with_image=True
                 ),
-                url=get_movie_url(movie=movie),
-                description=movie.overview[:500],
-                thumb_url=get_movie_image_url(movie=movie),
-            )
+                disable_web_page_preview=False,
+                parse_mode=ParseMode.HTML
+            ),
+            url=get_movie_url(movie=movie),
+            description=movie.overview[:500],
+            thumb_url=get_movie_image_url(movie=movie),
         )
-
-    update.inline_query.answer(results)
+        for movie in movies
+    ])
 
 
 def get_inline_handler():
