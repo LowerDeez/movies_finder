@@ -32,7 +32,7 @@ def search_movies(update: 'Update', context: 'CallbackContext') -> None:
 
     movies = []
 
-    for page in range(1, 4):
+    for page in range(1, 5):
         movies.extend(
             wrapper
             .search_movies(
