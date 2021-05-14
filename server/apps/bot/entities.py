@@ -9,6 +9,6 @@ __all__ = (
 class User:
     id: str
     username: str
-    first_name: str
-    last_name: str
-    language_code: str
+    first_name: str = ''
+    last_name: str = ''
+    language_code: str = ''
