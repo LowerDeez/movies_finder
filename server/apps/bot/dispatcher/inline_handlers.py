@@ -1,13 +1,16 @@
 from telegram import InlineQueryResultArticle, ParseMode, InputTextMessageContent, Update
 from telegram.ext import InlineQueryHandler, CallbackContext
 
+from django.utils.translation import ugettext_lazy as _
+
 from .cases import save_user_and_activate_user_language
 from .services import (
     get_movie_url,
-    get_movie_image_url,
-    render_movie_html
+    get_movie_poster_url,
+    render_movie_html,
+    get_movies_genres
 )
-from ..tmdb import TMDBWrapper
+from ..tmdb import TMDBWrapper, get_cached_movies_genres
 
 __all__ = (
     'search_movies',
@@ -23,8 +26,16 @@ def search_movies(update: 'Update', context: 'CallbackContext') -> None:
     )
     search_keyword = update.inline_query.query
 
+    print('Search keyword:', search_keyword)
+
     if search_keyword == "":
         return
+
+    genres_map = (
+        get_cached_movies_genres(
+            language=context.user_data.get('language')
+        )
+    )
 
     wrapper = TMDBWrapper(
         language=user.language_code
@@ -41,6 +52,8 @@ def search_movies(update: 'Update', context: 'CallbackContext') -> None:
             )
         )
 
+    movies = sorted(set(movies), key=lambda x: x.vote_average)
+
     update.inline_query.answer([
         InlineQueryResultArticle(
             id=str(movie.id),
@@ -55,8 +68,13 @@ def search_movies(update: 'Update', context: 'CallbackContext') -> None:
                 parse_mode=ParseMode.HTML
             ),
             url=get_movie_url(movie=movie),
-            description=movie.overview[:500],
-            thumb_url=get_movie_image_url(movie=movie),
+            description=(
+                f"{_('Rating:')} "
+                f"{movie.vote_average}/{movie.vote_count} "
+                f"({get_movies_genres(movie=movie, context=context, genres_map=genres_map, limit=2)})\n"
+                f"{movie.overview[:500]}"
+            ),
+            thumb_url=get_movie_poster_url(movie=movie, width=92),
         )
         for movie in movies
     ])

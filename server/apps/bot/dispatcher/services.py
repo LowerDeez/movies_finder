@@ -18,8 +18,10 @@ if TYPE_CHECKING:
     from tmdbv3api import Movie
 
 __all__ = (
-    'get_movie_image_url',
+    'get_movie_backdrop_url',
+    'get_movie_poster_url',
     'get_movie_url',
+    'get_movies_genres',
     'render_movie_html',
     'render_movies',
     'get_last_movie_keyboard',
@@ -32,11 +34,28 @@ __all__ = (
 )
 
 
-def get_movie_image_url(*, movie: 'Movie') -> str:
+def get_movie_backdrop_url(
+        *,
+        movie: 'Movie',
+        width: int = 600,
+        height: int = 900
+) -> str:
     return (
         f'https://www.themoviedb.org/t/p/'
-        f'w600_and_h900_bestv2'
+        f'w{width}_and_h{height}_bestv2'
         f'{movie.backdrop_path}'
+    )
+
+
+def get_movie_poster_url(
+        *,
+        movie: 'Movie',
+        width: int = 92,
+) -> str:
+    return (
+        f'https://www.themoviedb.org/t/p/'
+        f'w{width}'
+        f'{movie.poster_path}'
     )
 
 
@@ -47,12 +66,12 @@ def get_movie_url(*, movie: 'Movie') -> str:
     )
 
 
-def render_movie_html(
+def get_movies_genres(
         *,
         movie: 'Movie',
         context: 'CallbackContext',
         genres_map: Dict = None,
-        with_image: bool = False
+        limit: int = None
 ) -> str:
     if genres_map is None:
         genres_map = (
@@ -66,6 +85,19 @@ def render_movie_html(
         for genre_id in movie.genre_ids
     ]
 
+    if limit:
+        genres = genres[:limit]
+
+    return ', '.join(genres)
+
+
+def render_movie_html(
+        *,
+        movie: 'Movie',
+        context: 'CallbackContext',
+        genres_map: Dict = None,
+        with_image: bool = False
+) -> str:
     context = {
         'link': get_movie_url(movie=movie),
         'title': movie.title,
@@ -73,11 +105,15 @@ def render_movie_html(
         'description': movie.overview[:500],
         'release_date': movie.release_date,
         'vote_count': movie.vote_count,
-        'genres': ', '.join(genres)
+        'genres': get_movies_genres(
+            movie=movie,
+            context=context,
+            genres_map=genres_map
+        )
     }
 
     if with_image:
-        context['image'] = get_movie_image_url(movie=movie)
+        context['image'] = get_movie_backdrop_url(movie=movie)
 
     text = render_to_string(
         'movies/card.html',
@@ -107,7 +143,7 @@ def render_movies(
         )
     else:
         for movie, is_last in lookahead(movies):
-            image = get_movie_image_url(movie=movie)
+            image = get_movie_backdrop_url(movie=movie)
             print('Image:', image)
             message.bot.send_photo(
                 message.chat.id,
