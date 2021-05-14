@@ -159,6 +159,8 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'ru'
 LANGUAGES = (
     ('ru', 'Russian'),
+    ('en', 'English'),
+    ('uk', 'Ukrainian'),
 )
 
 TIME_ZONE = 'UTC'
