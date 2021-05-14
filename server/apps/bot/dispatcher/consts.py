@@ -29,6 +29,7 @@ ACTION_CHOICES = Choices(
     ('next_movies', 'Next movies'),
     ('clear_search_params', 'Clear search params')
 )
+
 STATE_CHOICES = Choices(
     ('selecting_action', 'Selection action'),
     ('searching_movies', 'Searching movies'),
@@ -39,6 +40,7 @@ STATE_CHOICES = Choices(
     ('stopping', 'Stopping'),
     ('showing_search_params', 'Showing'),
 )
+
 CONSTS = Choices(
     ('search_params', 'Search params'),
     ('current_search_param', 'Current feature'),

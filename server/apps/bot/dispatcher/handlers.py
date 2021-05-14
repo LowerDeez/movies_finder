@@ -1,5 +1,3 @@
-from os import environ
-
 from django.utils.translation import ugettext_lazy as _
 
 from telegram import (
@@ -17,6 +15,7 @@ from telegram.ext import (
     CallbackContext
 )
 
+from .cases import save_user_and_activate_user_language
 from .consts import (
     ACTION_CHOICES,
     STATE_CHOICES,
@@ -25,10 +24,6 @@ from .consts import (
     END,
     BACK_BUTTON,
 
-)
-from .tmdb import (
-    TMDBWrapper,
-    get_cached_movies_genres
 )
 from .services import (
     render_movies,
@@ -39,18 +34,18 @@ from .services import (
     get_discovering_movies_callback_text,
     get_current_page
 )
-from .utils import activate_user_language
-from ..services.user import parse_user, save_user
+from ..tmdb import (
+    TMDBWrapper,
+    get_cached_movies_genres
+)
 
 
 def start(update: 'Update', context: 'CallbackContext'):
     print('Start...')
-    user = parse_user(
+    user = save_user_and_activate_user_language(
         update=update,
         context=context
     )
-    save_user(user_entity=user)
-    activate_user_language(user=user)
     context.user_data['language'] = user.language_code
     print('User:', user)
     text = str(_(

@@ -9,8 +9,8 @@ from django.utils.translation import ugettext_lazy as _
 from telegram import ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
 
 from .consts import ACTION_CHOICES, BACK_BUTTON, CONSTS
-from .tmdb import get_cached_movies_genres
-from .utils import lookahead
+from ..utils import lookahead
+from ..tmdb import get_cached_movies_genres
 
 if TYPE_CHECKING:
     from telegram import Message, Update
@@ -18,6 +18,9 @@ if TYPE_CHECKING:
     from tmdbv3api import Movie
 
 __all__ = (
+    'get_movie_image_url',
+    'get_movie_url',
+    'render_movie_html',
     'render_movies',
     'get_last_movie_keyboard',
     'set_search_params',
@@ -27,6 +30,61 @@ __all__ = (
     'get_current_page',
     'movies_search_has_more_pages'
 )
+
+
+def get_movie_image_url(*, movie: 'Movie') -> str:
+    return (
+        f'https://www.themoviedb.org/t/p/'
+        f'w600_and_h900_bestv2'
+        f'{movie.backdrop_path}'
+    )
+
+
+def get_movie_url(*, movie: 'Movie') -> str:
+    return (
+        f'https://www.themoviedb.org/movie/'
+        f'{movie.id}'
+    )
+
+
+def render_movie_html(
+        *,
+        movie: 'Movie',
+        context: 'CallbackContext',
+        genres_map: Dict = None,
+        with_image: bool = False
+) -> str:
+    if genres_map is None:
+        genres_map = (
+            get_cached_movies_genres(
+                language=context.user_data.get('language')
+            )
+        )
+
+    genres = [
+        genres_map[genre_id]
+        for genre_id in movie.genre_ids
+    ]
+
+    context = {
+        'link': get_movie_url(movie=movie),
+        'title': movie.title,
+        'rating': movie.vote_average,
+        'description': movie.overview[:500],
+        'release_date': movie.release_date,
+        'vote_count': movie.vote_count,
+        'genres': ', '.join(genres)
+    }
+
+    if with_image:
+        context['image'] = get_movie_image_url(movie=movie)
+
+    text = render_to_string(
+        'movies/card.html',
+        context=context
+    )
+
+    return text
 
 
 def render_movies(
@@ -49,16 +107,7 @@ def render_movies(
         )
     else:
         for movie, is_last in lookahead(movies):
-            genres = [
-                genres_map[genre_id]
-                for genre_id in movie.genre_ids
-            ]
-
-            image = (
-                f'https://www.themoviedb.org/t/p/'
-                f'w600_and_h900_bestv2'
-                f'{movie.backdrop_path}'
-            )
+            image = get_movie_image_url(movie=movie)
             print('Image:', image)
             message.bot.send_photo(
                 message.chat.id,
@@ -66,21 +115,10 @@ def render_movies(
                 parse_mode=ParseMode.HTML
             )
 
-            text = render_to_string(
-                'movies/card.html',
-                {
-                    'image': image,
-                    'link': (
-                        f'https://www.themoviedb.org/movie/'
-                        f'{movie.id}'
-                    ),
-                    'title': movie.title,
-                    'rating': movie.vote_average,
-                    'description': movie.overview[:500],
-                    'release_date': movie.release_date,
-                    'vote_count': movie.vote_count,
-                    'genres': ', '.join(genres)
-                }
+            text = render_movie_html(
+                movie=movie,
+                context=context,
+                genres_map=genres_map
             )
 
             message.reply_text(

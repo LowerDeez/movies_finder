@@ -1,4 +1,7 @@
 from dataclasses import asdict, fields
+
+from django.conf import settings
+from django.utils.translation import activate
 from typing import TYPE_CHECKING
 
 from telegram import Bot, MessageEntity
@@ -14,7 +17,8 @@ if TYPE_CHECKING:
 __all__ = (
     'parse_user',
     'save_user',
-    'send_message'
+    'send_message',
+    'activate_user_language'
 )
 
 
@@ -96,3 +100,11 @@ def send_message(
         success = True
         ChatUser.objects.filter(user_id=user_id).update(is_blocked_bot=False)
     return success
+
+
+def activate_user_language(*, user: 'UserEntity'):
+    language_codes = list(dict(settings.LANGUAGES).keys())
+
+    if user.language_code:
+        if user.language_code in language_codes:
+            activate(user.language_code)

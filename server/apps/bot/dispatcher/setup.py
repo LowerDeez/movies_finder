@@ -4,6 +4,7 @@ from telegram.ext import (
 )
 
 from .handlers import get_movie_handler
+from .inline_handlers import get_inline_handler
 
 __all__ = (
     'setup_dispatcher',
@@ -11,7 +12,6 @@ __all__ = (
 
 
 def setup_dispatcher(token: str) -> 'Dispatcher':
-    # Create bot, update queue and bots instances
     bot = TelegramBot(token=token)
 
     dispatcher = Dispatcher(
@@ -19,9 +19,9 @@ def setup_dispatcher(token: str) -> 'Dispatcher':
         update_queue=None,
         workers=0,
         use_context=True,
-        # persistence=persistence
     )
 
     dispatcher.add_handler(get_movie_handler())
+    dispatcher.add_handler(get_inline_handler())
 
     return dispatcher

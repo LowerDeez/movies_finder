@@ -7,7 +7,7 @@ from django.core.cache import cache
 from constance import config
 from tmdbv3api import TMDb, Movie, Discover, Genre
 
-from ..utils import modify_result
+from .utils import modify_result
 
 __all__ = (
     'TMDBWrapper',
