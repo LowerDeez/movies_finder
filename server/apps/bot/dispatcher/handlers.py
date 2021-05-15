@@ -1,434 +1,42 @@
-from django.utils.translation import ugettext_lazy as _
-
-from telegram import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
-    Update,
-    ParseMode,
-)
 from telegram.ext import (
     CommandHandler,
     MessageHandler,
     Filters,
     ConversationHandler,
-    CallbackQueryHandler,
-    CallbackContext
+    CallbackQueryHandler
 )
 
-from .cases import save_user_and_activate_user_language
+from apps.bot.dispatcher.callbacks.discover_movies import (
+    back_or_clear_show_data_callback,
+    discovering_movies_callback,
+    select_genre_callback,
+    select_years_callback,
+    show_data_callback,
+    discover_movies_callback
+)
+from apps.bot.dispatcher.callbacks.entry_points import (
+    start,
+    end,
+    stop,
+    stop_nested, back_to_start
+)
+from apps.bot.dispatcher.callbacks.list_movies import (
+    list_movies_callback,
+)
+from apps.bot.dispatcher.callbacks.search_movies import (
+    search_movies_callback,
+    display_movies_callback
+)
 from .consts import (
     ACTION_CHOICES,
     STATE_CHOICES,
-    CONSTS,
-    YEARS_CHOICES,
     END,
-    BACK_BUTTON,
-
-)
-from .services import (
-    render_movies,
-    get_last_movie_keyboard,
-    build_search_params,
-    display_search_params,
-    set_search_params,
-    get_discovering_movies_callback_text,
-    get_current_page
-)
-from ..tmdb import (
-    TMDBWrapper,
-    get_cached_movies_genres
 )
 
-
-def start(update: 'Update', context: 'CallbackContext'):
-    print('Start...')
-    user = save_user_and_activate_user_language(
-        update=update,
-        context=context
-    )
-    context.user_data['language'] = user.language_code
-    print('User:', user)
-    text = str(_(
-        "Lets find a movie for you..."
-    ))
-
-    buttons = [
-        [
-            InlineKeyboardButton(
-                text=str(_('Discover movies')),
-                callback_data=ACTION_CHOICES.discover_movies
-            ),
-            InlineKeyboardButton(
-                text=str(_('Search movies')),
-                callback_data=ACTION_CHOICES.search_movies
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text=str(_('Popular')),
-                callback_data=ACTION_CHOICES.popular
-            ),
-            InlineKeyboardButton(
-                text=str(_('Top Rated')),
-                callback_data=ACTION_CHOICES.top_rated
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text=str(_('Upcoming')),
-                callback_data=ACTION_CHOICES.upcoming
-            ),
-            InlineKeyboardButton(
-                text=str(_('Now playing')),
-                callback_data=ACTION_CHOICES.now_playing
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                text=str(_('Done')),
-                callback_data=str(END)
-            ),
-        ],
-    ]
-    keyboard = InlineKeyboardMarkup(buttons)
-
-    # case for back from `discovering_movies_callback`
-    print('Start message:', update.message)
-    if not update.message:
-        print('Callback:', update.callback_query.data)
-        print('User data:', context.user_data)
-        update.callback_query.answer()
-        # remove back button
-        # update.callback_query.message.delete()
-        update.callback_query.edit_message_reply_markup(
-            reply_markup=None
-        )
-        update.callback_query.message.reply_text(
-            text=text,
-            reply_markup=keyboard
-        )
-        if context.user_data.pop(CONSTS.search_params, None) is not None:
-            update.callback_query.delete_message()
-    else:
-        update.message.reply_text(
-            text=text,
-            reply_markup=keyboard
-        )
-
-    # * through `selecting_action`
-    return STATE_CHOICES.selecting_action
-
-
-def end(update: 'Update', context: 'CallbackContext') -> int:
-    """End conversation from InlineKeyboardButton."""
-    print('End...')
-    text = str(_('See you around!'))
-    update.callback_query.answer()
-    update.callback_query.edit_message_text(text=text)
-    context.user_data.clear()
-    return END
-
-
-def stop(update: 'Update', context: 'CallbackContext') -> int:
-    """End Conversation by command."""
-    print('Stop...')
-    update.message.reply_text(str(_('Okay, bye.')))
-    context.user_data.clear()
-    return END
-
-
-def stop_nested(update: 'Update', context: 'CallbackContext') -> str:
-    """Completely end conversation from within nested conversation."""
-    print('Stop nested...')
-    update.message.reply_text(str(_('Okay, bye.')))
-    return STATE_CHOICES.stopping
-
-
-def end_second_level_conversation(update: 'Update', context: 'CallbackContext'):
-    """
-    Returns to start
-    """
-    print('End second level conversation...')
-    start(update, context)
-    context.user_data.clear()
-    return END
-
-
-def end_third_level_conversation(update: 'Update', context: 'CallbackContext'):
-    """
-    Returns to discovering movies menu from nested options like "Show data"
-    """
-    print('End third level conversation...')
-    print(update.callback_query.data)
-    if update.callback_query.data == ACTION_CHOICES.clear_search_params:
-        context.user_data.clear()
-    return discovering_movies_callback(update, context)
-
-
-def search_movies_callback(update: 'Update', context: 'CallbackContext'):
-    print('Search movies...')
-    text = str(_('Okay, please enter some keywords to search:'))
-    print(update.callback_query.data)
-    search_keyword = context.user_data.pop(CONSTS.search_keyword, None)
-    print('Previous search keyword:', search_keyword)
-    update.callback_query.answer()
-
-    if search_keyword:
-        update.callback_query.message.reply_text(
-            text=text
-        )
-        update.callback_query.edit_message_reply_markup(
-            reply_markup=None
-        )
-    else:
-        update.callback_query.edit_message_text(text=text)
-
-    return STATE_CHOICES.searching_movies
-
-
-def display_movies_callback(update: 'Update', context: 'CallbackContext'):
-    print('Display movies...')
-    user_data = context.user_data
-    search_keyword = user_data.get(CONSTS.search_keyword)
-    page = get_current_page()
-    message = update.message
-
-    if update.message:
-        page = 1
-        search_keyword = update.message.text
-        user_data[CONSTS.search_keyword] = search_keyword
-
-    # if we have callback query with `next_movies`
-    if update.callback_query:
-        message = update.callback_query.message
-        page += 1
-
-    print('Search keywords:', search_keyword)
-    print('Page:', page)
-    movies = (
-        TMDBWrapper(
-            language=context.user_data.get('language')
-        )
-        .search_movies(
-            query=search_keyword,
-            page=page
-        )
-    )
-    render_movies(
-        context=context,
-        movies=movies,
-        message=message,
-        reply_markup=get_last_movie_keyboard(movies=movies)
-    )
-
-    return STATE_CHOICES.displaying_movies
-
-
-def list_movies_callback(update: 'Update', context: 'CallbackContext'):
-    print('List movies...')
-    update.callback_query.answer()
-    page = get_current_page()
-    list_method = context.user_data.get(CONSTS.list_method)
-    callback_data = update.callback_query.data
-
-    if callback_data == ACTION_CHOICES.next_movies:
-        page += 1
-    else:
-        # new list method
-        if list_method != callback_data:
-            page = 1
-
-        list_method = callback_data
-
-    print('List method:', list_method)
-    context.user_data[CONSTS.list_method] = list_method
-
-    tmdb = TMDBWrapper(language=context.user_data.get('language'))
-    method = getattr(tmdb, list_method)
-
-    movies = method(page=page)
-
-    render_movies(
-        context=context,
-        movies=movies,
-        message=update.callback_query.message,
-        reply_markup=get_last_movie_keyboard(movies=movies)
-    )
-
-    return STATE_CHOICES.listing_movies
-
-
-# Second level conversation callbacks
-def discovering_movies_callback(update: 'Update', context: 'CallbackContext') -> str:
-    """Choose to add a parent or a child."""
-    print('Discovering movies:')
-    set_search_params(
-        update=update,
-        context=context,
-    )
-    text = get_discovering_movies_callback_text(
-        update=update,
-        context=context
-    )
-
-    buttons = [
-        [
-            InlineKeyboardButton(
-                text=str(_('Genres')),
-                callback_data=ACTION_CHOICES.select_genre
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text=str(_('Years range')),
-                callback_data=ACTION_CHOICES.select_years
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text=str(_('Show data')),
-                callback_data=ACTION_CHOICES.show_search_params
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text=str(_('Discover')),
-                callback_data=ACTION_CHOICES.discover
-            )
-        ],
-        BACK_BUTTON
-    ]
-    keyboard = InlineKeyboardMarkup(buttons)
-
-    update.callback_query.answer()
-    print('Callback:', update.callback_query.data)
-    if update.callback_query.data == str(END):
-        update.callback_query.message.reply_text(
-            text=text,
-            reply_markup=keyboard
-        )
-        update.callback_query.edit_message_reply_markup()
-    else:
-        update.callback_query.edit_message_text(
-            text=text,
-            reply_markup=keyboard
-        )
-
-    return STATE_CHOICES.discovering_movies
-
-
-def select_genre_callback(update: 'Update', context: 'CallbackContext'):
-    print('Select genre:')
-    text = str(_('Okay, these are genres:'))
-    buttons = []
-
-    genres = (
-        get_cached_movies_genres(
-            language=context.user_data.get('language')
-        )
-    )
-
-    for genre_id, genre_name in genres.items():
-        button = InlineKeyboardButton(
-            text=genre_name,
-            # * callback data to handle by description_conversation handler entry point
-            callback_data=genre_id
-        )
-        buttons.append([button])
-
-    buttons.append(BACK_BUTTON)
-    keyboard = InlineKeyboardMarkup(buttons)
-
-    update.callback_query.answer()
-    update.callback_query.edit_message_text(
-        text=text,
-        reply_markup=keyboard
-    )
-    context.user_data[CONSTS.current_search_param] = CONSTS.genres
-
-    return STATE_CHOICES.selecting_search_param
-
-
-def select_years_callback(update: 'Update', context: 'CallbackContext'):
-    print('Select years:')
-    text = str(_('Okay, these are years:'))
-    buttons = []
-
-    for year, title in YEARS_CHOICES:
-        button = InlineKeyboardButton(
-            text=title,
-            # * callback data to handle by description_conversation handler entry point
-            callback_data=year
-        )
-        buttons.append([button])
-
-    buttons.append(BACK_BUTTON)
-    keyboard = InlineKeyboardMarkup(buttons)
-
-    update.callback_query.answer()
-    update.callback_query.edit_message_text(text=text, reply_markup=keyboard)
-    context.user_data[CONSTS.current_search_param] = CONSTS.years
-
-    return STATE_CHOICES.selecting_search_param
-
-
-def show_data(update: 'Update', context: 'CallbackContext') -> str:
-    """Pretty print gathered data."""
-    keyboard = InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton(
-                    text=str(_('Discover')),
-                    callback_data=ACTION_CHOICES.discover
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text=str(_('Clear')),
-                    callback_data=ACTION_CHOICES.clear_search_params
-                )
-            ],
-            BACK_BUTTON
-        ]
-    )
-
-    update.callback_query.answer()
-    update.callback_query.edit_message_text(
-        text=display_search_params(
-            update=update,
-            context=context
-        ),
-        reply_markup=keyboard,
-        parse_mode=ParseMode.HTML
-    )
-
-    return STATE_CHOICES.showing_search_params
-
-
-def discover_movies_callback(update: 'Update', context: 'CallbackContext'):
-    print('Discover movies...')
-    update.callback_query.answer()
-    movies = (
-        TMDBWrapper(
-            language=context.user_data.get('language')
-        )
-        .discover_movies(
-            params=build_search_params(
-                update=update,
-                context=context,
-            )
-        )
-    )
-    # + INFO
-    # When replying to a text message (from a MessageHandler) is fine
-    # to use update.message.reply_text, but in your case the incoming message
-    # is a managed by the CallbackHandler which receives a different object.
-    render_movies(
-        context=context,
-        movies=movies,
-        message=update.callback_query.message,
-        reply_markup=get_last_movie_keyboard(movies=movies)
-    )
+__all__ = (
+    'get_select_action_handlers',
+    'get_movie_handler'
+)
 
 
 def get_select_action_handlers():
@@ -461,7 +69,7 @@ def get_select_action_handlers():
                         pattern=f'^{ACTION_CHOICES.next_movies}$'
                     ),
                     CallbackQueryHandler(
-                        end_second_level_conversation,
+                        back_to_start,
                         pattern=f'^{END}$'
                     ),
                 ],
@@ -476,8 +84,11 @@ def get_select_action_handlers():
                         pattern=f'^{ACTION_CHOICES.discover}$'
                     ),
                     CallbackQueryHandler(
-                        end_third_level_conversation,
-                        pattern=f'^{END}$|^{ACTION_CHOICES.clear_search_params}$'
+                        back_or_clear_show_data_callback,
+                        pattern=(
+                            f'^{ACTION_CHOICES.back_from_show_search_params}$'
+                            f'|^{ACTION_CHOICES.clear_search_params}$'
+                        )
                     ),
                 ]
             },
@@ -488,7 +99,7 @@ def get_select_action_handlers():
             # is inappropriate for the update
             fallbacks=[
                 CallbackQueryHandler(
-                    show_data,
+                    show_data_callback,
                     pattern=f'^{ACTION_CHOICES.show_search_params}$'
                 ),
                 CommandHandler('stop', stop_nested),
@@ -519,7 +130,7 @@ def get_select_action_handlers():
         ),
 
         CallbackQueryHandler(
-            show_data,
+            show_data_callback,
             pattern=f'^{ACTION_CHOICES.show_search_params}$'
         ),
 
@@ -572,10 +183,6 @@ def get_movie_handler() -> 'ConversationHandler':
         },
         fallbacks=[
             CommandHandler('stop', stop),
-            # CallbackQueryHandler(
-            #     end_second_level_conversation,
-            #     pattern=f'^{END}$'
-            # ),
         ],
     )
 

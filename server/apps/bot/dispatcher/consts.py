@@ -25,9 +25,10 @@ ACTION_CHOICES = Choices(
     ('select_genre', 'Select genre'),
     ('select_years', 'Select years'),
     ('discover', 'Discover'),
-    ('show_search_params', 'Show params'),
     ('next_movies', 'Next movies'),
-    ('clear_search_params', 'Clear search params')
+    ('show_search_params', 'Show params'),
+    ('clear_search_params', 'Clear search params'),
+    ('back_from_show_search_params', 'Back from show search params')
 )
 
 STATE_CHOICES = Choices(

@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from telegram import ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
 
-from .consts import ACTION_CHOICES, BACK_BUTTON, CONSTS
+from .consts import ACTION_CHOICES, BACK_BUTTON, CONSTS, END
 from ..utils import lookahead
 from ..tmdb import get_cached_movies_genres
 
@@ -185,7 +185,7 @@ def set_search_params(
         *,
         update: 'Update',
         context: 'CallbackContext'
-):
+) -> str:
     user_data = context.user_data
     callback_data = update.callback_query.data
     search_params: 'MultiValueDict' = (
@@ -205,10 +205,12 @@ def set_search_params(
     print('Current search param:', current_search_param)
     print('Callback data:', callback_data)
 
-    if current_search_param in [CONSTS.genres, CONSTS.years]:
-        search_params.appendlist(current_search_param, callback_data)
+    if current_search_param in [CONSTS.genres, CONSTS.years] and callback_data != str(END):
+        if callback_data not in search_params.values():
+            search_params.appendlist(current_search_param, callback_data)
 
     print('New user data:', user_data)
+    return current_search_param
 
 
 def build_search_params(
@@ -260,13 +262,13 @@ def display_search_params(
 ) -> str:
     search_params: 'MultiValueDict' = context.user_data[CONSTS.search_params]
     genres = search_params.getlist(CONSTS.genres)
-    years = search_params.getlist(CONSTS.years)
+    years = set(search_params.getlist(CONSTS.years))
     genres_map = (
         get_cached_movies_genres(
             language=context.user_data.get('language')
         )
     )
-    genres_string = (
+    genres = (
         ', '.join(
             [
                 genres_map[int(genre_id)]
@@ -275,13 +277,15 @@ def display_search_params(
         )
         if genres else '-'
     )
+    years = ', '.join(years) if years else '-'
 
-    text = (
-        f"<b>{_('Genres')}:</b> {genres_string}\n"
-        f"<b>{_('Years')}:</b> {', '.join(years)}"
+    return render_to_string(
+        'movies/search_params.html',
+        context={
+            'genres': genres,
+            'years': years
+        }
     )
-
-    return text
 
 
 def get_discovering_movies_callback_text(

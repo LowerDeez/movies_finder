@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-14 12:18+0000\n"
+"POT-Creation-Date: 2021-05-15 15:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,80 +22,83 @@ msgstr ""
 msgid "Movie DB API key"
 msgstr ""
 
-#: apps/bot/dispatcher/consts.py:68
-msgid "Back"
-msgstr ""
-
-#: apps/bot/dispatcher/handlers.py:52
-msgid "Lets find a movie for you..."
-msgstr ""
-
-#: apps/bot/dispatcher/handlers.py:58
-msgid "Discover movies"
-msgstr ""
-
-#: apps/bot/dispatcher/handlers.py:62
-msgid "Search movies"
-msgstr ""
-
-#: apps/bot/dispatcher/handlers.py:68
-msgid "Popular"
-msgstr ""
-
-#: apps/bot/dispatcher/handlers.py:72
-msgid "Top Rated"
-msgstr ""
-
-#: apps/bot/dispatcher/handlers.py:78
-msgid "Upcoming"
-msgstr ""
-
-#: apps/bot/dispatcher/handlers.py:82
-msgid "Now playing"
-msgstr ""
-
-#: apps/bot/dispatcher/handlers.py:88
-msgid "Done"
-msgstr ""
-
-#: apps/bot/dispatcher/handlers.py:125
-msgid "See you around!"
-msgstr ""
-
-#: apps/bot/dispatcher/handlers.py:135 apps/bot/dispatcher/handlers.py:143
-msgid "Okay, bye."
-msgstr ""
-
-#: apps/bot/dispatcher/handlers.py:170
-msgid "Okay, please enter some keywords to search:"
-msgstr ""
-
-#: apps/bot/dispatcher/handlers.py:277
+#: apps/bot/dispatcher/callbacks/discover_movies.py:54
 msgid "Genres"
 msgstr ""
 
-#: apps/bot/dispatcher/handlers.py:283
+#: apps/bot/dispatcher/callbacks/discover_movies.py:60
 msgid "Years range"
 msgstr ""
 
-#: apps/bot/dispatcher/handlers.py:289
+#: apps/bot/dispatcher/callbacks/discover_movies.py:66
 msgid "Show data"
 msgstr ""
 
-#: apps/bot/dispatcher/handlers.py:295 apps/bot/dispatcher/handlers.py:381
+#: apps/bot/dispatcher/callbacks/discover_movies.py:72
+#: apps/bot/dispatcher/callbacks/discover_movies.py:159
 msgid "Discover"
 msgstr ""
 
-#: apps/bot/dispatcher/handlers.py:322
+#: apps/bot/dispatcher/callbacks/discover_movies.py:100
 msgid "Okay, these are genres:"
 msgstr ""
 
-#: apps/bot/dispatcher/handlers.py:354
+#: apps/bot/dispatcher/callbacks/discover_movies.py:132
 msgid "Okay, these are years:"
 msgstr ""
 
-#: apps/bot/dispatcher/handlers.py:387
+#: apps/bot/dispatcher/callbacks/discover_movies.py:165
 msgid "Clear"
+msgstr ""
+
+#: apps/bot/dispatcher/callbacks/discover_movies.py:171
+#: apps/bot/dispatcher/consts.py:69
+msgid "Back"
+msgstr ""
+
+#: apps/bot/dispatcher/callbacks/entry_points.py:40
+msgid "Lets find a movie for you..."
+msgstr ""
+
+#: apps/bot/dispatcher/callbacks/entry_points.py:46
+msgid "Discover movies"
+msgstr ""
+
+#: apps/bot/dispatcher/callbacks/entry_points.py:50
+msgid "Search movies"
+msgstr ""
+
+#: apps/bot/dispatcher/callbacks/entry_points.py:56
+msgid "Popular"
+msgstr ""
+
+#: apps/bot/dispatcher/callbacks/entry_points.py:60
+msgid "Top Rated"
+msgstr ""
+
+#: apps/bot/dispatcher/callbacks/entry_points.py:66
+msgid "Upcoming"
+msgstr ""
+
+#: apps/bot/dispatcher/callbacks/entry_points.py:70
+msgid "Now playing"
+msgstr ""
+
+#: apps/bot/dispatcher/callbacks/entry_points.py:76
+msgid "Done"
+msgstr ""
+
+#: apps/bot/dispatcher/callbacks/entry_points.py:113
+msgid "See you around!"
+msgstr ""
+
+#: apps/bot/dispatcher/callbacks/entry_points.py:123
+#: apps/bot/dispatcher/callbacks/entry_points.py:131
+msgid "Okay, bye."
+msgstr ""
+
+#: apps/bot/dispatcher/callbacks/search_movies.py:25
+msgid "Okay, please enter some keywords to search:"
 msgstr ""
 
 #: apps/bot/dispatcher/services.py:175
@@ -155,11 +158,16 @@ msgid "Release date:"
 msgstr ""
 
 #: apps/bot/templates/movies/card.html:12
+#: apps/bot/templates/movies/search_params.html:3
 msgid "Genres:"
 msgstr ""
 
 #: apps/bot/templates/movies/card.html:14
 msgid "Description:"
+msgstr ""
+
+#: apps/bot/templates/movies/search_params.html:5
+msgid "Years:"
 msgstr ""
 
 #: shared/apps.py:9
